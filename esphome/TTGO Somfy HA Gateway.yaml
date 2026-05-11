@@ -1,0 +1,96 @@
+esphome:
+  name: ttgo-somfy-gw
+  friendly_name: "TTGO Somfy Gateway"
+  on_boot:
+    priority: 600
+    then:
+      - lambda: |-
+          id(my_somfy).rx_sensor = id(somfy_json_rx);
+
+external_components:
+  - source:
+      type: local
+      path: components
+
+somfy_custom_v3:
+  id: my_somfy
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+web_server:
+  port: 80
+
+api:
+ota:
+  - platform: esphome
+logger:
+  level: DEBUG
+
+i2c:
+  sda: 21
+  scl: 22
+  scan: false
+
+font:
+  - file: "gfonts://Roboto Mono"
+    id: font_sm
+    size: 10
+  - file: "gfonts://Roboto Mono"
+    id: font_hd
+    size: 11
+#    weight: bold
+
+display:
+  - platform: ssd1306_i2c
+    model: "SSD1306 128x64"
+    address: 0x3C
+    update_interval: 500ms
+    lambda: |-
+      // Header (inverteret)
+      it.filled_rectangle(0, 0, 128, 13);
+      it.print(14, 2, id(font_hd), COLOR_OFF, "Somfy Gateway");
+
+      // RX
+      it.print(0, 16, id(font_sm), "RX:");
+      it.printf(22, 16, id(font_sm), "%s", id(my_somfy).disp_rx_addr.c_str());
+      it.printf(22, 27, id(font_sm), "%s  RC:%s",
+                id(my_somfy).disp_rx_cmd.c_str(),
+                id(my_somfy).disp_rx_rc.c_str());
+
+      // TX
+      it.print(0, 40, id(font_sm), "TX:");
+      it.printf(22, 40, id(font_sm), "%s", id(my_somfy).disp_tx_addr.c_str());
+      it.printf(22, 51, id(font_sm), "%s", id(my_somfy).disp_tx_cmd.c_str());
+
+# RX: modtagne Somfy-beskeder leveres her som JSON
+# Eksempel output: {"protocol":"somfy_rts","dir":"rx","address":"A1B2C1","command":"up","rolling_code":1737}
+text_sensor:
+  - platform: template
+    name: "Somfy JSON RX"
+    id: somfy_json_rx
+
+# TX: skriv JSON her for at sende til Somfy
+# Normal:  {"protocol":"somfy_rts","dir":"tx","address":"A1B2C1","command":"up","rolling_code":103,"repeat":2}
+# PROG:    {"protocol":"somfy_rts","dir":"tx","address":"A1B2C1","command":"prog","rolling_code":103,"repeat":25,"interval_ms":140}
+# address er hex-streng uden 0x
+# Kommandoer: my, up, my_up, down, my_down, up_down, prog, sun_flag, flag
+text:
+  - platform: template
+    name: "Somfy JSON TX"
+    id: somfy_json_tx
+    mode: text
+    optimistic: true
+    on_value:
+      then:
+        - lambda: |-
+            id(my_somfy).parse_and_send(x);
+
+
+
