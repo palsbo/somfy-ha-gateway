@@ -9,6 +9,8 @@ from typing import Any
 import voluptuous as vol
 
 from homeassistant import config_entries
+from homeassistant.helpers import device_registry as dr
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers import selector
 
 from .const import (
@@ -34,7 +36,6 @@ from .const import (
 )
 from .models import normalize_cover_config
 
-
 COVER_TYPES = ["blind", "awning", "curtain", "shutter"]
 ADDRESS_PATTERN = re.compile(r"^[0-9A-Fa-f]{1,6}$")
 
@@ -57,6 +58,7 @@ def normalize_covers(value: list[dict[str, Any]]) -> list[dict[str, Any]]:
         cover_id = cover[CONF_COVER_ID]
         if cover_id in seen_ids:
             raise ValueError(f"duplicate cover id: {cover_id}")
+
         seen_ids.add(cover_id)
         normalized.append(cover)
 
@@ -85,7 +87,6 @@ def _validate_observed_addresses(value: str | list[str]) -> list[str]:
         parts = [part.strip() for part in value.split(",") if part.strip()]
     else:
         parts = [str(part).strip() for part in value if str(part).strip()]
-
     return [_validate_address(part) for part in parts]
 
 
@@ -96,7 +97,6 @@ def _cover_form_schema(
 ) -> vol.Schema:
     """Return the add/edit cover form schema."""
     defaults = defaults or {}
-
     fields: dict[Any, Any] = {}
 
     if include_id:
@@ -166,6 +166,7 @@ def _slugify_cover_id(value: str) -> str:
 def _unique_cover_id(base_id: str, covers: list[dict[str, Any]]) -> str:
     """Return a unique cover id by appending a numeric suffix if needed."""
     existing_ids = {cover[CONF_COVER_ID] for cover in covers}
+
     if base_id not in existing_ids:
         return base_id
 
@@ -272,10 +273,67 @@ class SomfyOptionsFlowHandler(config_entries.OptionsFlow):
         """Return the cover selected in a previous menu step."""
         if not self._selected_cover_id:
             return None
+
         for cover in self._current_covers():
             if cover[CONF_COVER_ID] == self._selected_cover_id:
                 return cover
+
         return None
+
+    def _remove_cover_entities_from_registry(self, cover_id: str) -> None:
+        """Remove entity registry entries for a deleted cover."""
+        entity_registry = er.async_get(self.hass)
+        entry_id = self._config_entry.entry_id
+
+        unique_ids_by_domain = {
+            "cover": [
+                f"{entry_id}_{cover_id}_cover",
+            ],
+            "text": [
+                f"{entry_id}_{cover_id}_address",
+                f"{entry_id}_{cover_id}_observed_addresses",
+            ],
+            "number": [
+                f"{entry_id}_{cover_id}_position",
+                f"{entry_id}_{cover_id}_rolling",
+                f"{entry_id}_{cover_id}_repeat",
+                f"{entry_id}_{cover_id}_time_out",
+                f"{entry_id}_{cover_id}_time_in",
+                f"{entry_id}_{cover_id}_my_position",
+            ],
+            "select": [
+                f"{entry_id}_{cover_id}_cover_type",
+            ],
+            "button": [
+                f"{entry_id}_{cover_id}_prog",
+            ],
+        }
+
+        for platform_domain, unique_ids in unique_ids_by_domain.items():
+            for unique_id in unique_ids:
+                entity_id = entity_registry.async_get_entity_id(
+                    platform_domain,
+                    DOMAIN,
+                    unique_id,
+                )
+                if entity_id:
+                    entity_registry.async_remove(entity_id)
+
+    def _remove_cover_device_from_registry(self, cover_id: str) -> None:
+        """Remove the device registry entry for a deleted cover."""
+        device_registry = dr.async_get(self.hass)
+        entry_id = self._config_entry.entry_id
+
+        device = device_registry.async_get_device(
+            identifiers={(DOMAIN, f"{entry_id}_{cover_id}")},
+        )
+        if device:
+            device_registry.async_remove_device(device.id)
+
+    def _remove_cover_from_registries(self, cover_id: str) -> None:
+        """Remove both stale entities and the empty cover device."""
+        self._remove_cover_entities_from_registry(cover_id)
+        self._remove_cover_device_from_registry(cover_id)
 
     def _normalize_form_cover(
         self,
@@ -286,6 +344,7 @@ class SomfyOptionsFlowHandler(config_entries.OptionsFlow):
     ) -> dict[str, Any]:
         """Normalize one cover from add/edit form data."""
         cover = dict(user_input)
+
         if existing_id is not None:
             cover[CONF_COVER_ID] = existing_id
         else:
@@ -296,6 +355,7 @@ class SomfyOptionsFlowHandler(config_entries.OptionsFlow):
         cover[CONF_OBSERVED_ADDRESSES] = _validate_observed_addresses(
             cover.get(CONF_OBSERVED_ADDRESSES, "")
         )
+
         return normalize_cover_config(cover)
 
     async def async_step_init(self, user_input=None):
@@ -363,8 +423,8 @@ class SomfyOptionsFlowHandler(config_entries.OptionsFlow):
                     user_input,
                     existing_covers=covers,
                 )
-
                 covers.append(new_cover)
+
                 return self.async_create_entry(
                     title="",
                     data=self._base_options(covers),
@@ -422,6 +482,7 @@ class SomfyOptionsFlowHandler(config_entries.OptionsFlow):
         """
         errors = {}
         selected = self._get_selected_cover()
+
         if not selected:
             return self.async_abort(reason="cover_not_found")
 
@@ -478,6 +539,7 @@ class SomfyOptionsFlowHandler(config_entries.OptionsFlow):
     async def async_step_remove_cover(self, user_input=None):
         """Confirm removal of one cover."""
         selected = self._get_selected_cover()
+
         if not selected:
             return self.async_abort(reason="cover_not_found")
 
@@ -485,11 +547,15 @@ class SomfyOptionsFlowHandler(config_entries.OptionsFlow):
             if not user_input.get("confirm_remove", False):
                 return await self.async_step_init()
 
+            removed_cover_id = selected[CONF_COVER_ID]
+
             covers = [
                 cover
                 for cover in self._current_covers()
-                if cover[CONF_COVER_ID] != selected[CONF_COVER_ID]
+                if cover[CONF_COVER_ID] != removed_cover_id
             ]
+
+            self._remove_cover_from_registries(removed_cover_id)
 
             return self.async_create_entry(
                 title="",
