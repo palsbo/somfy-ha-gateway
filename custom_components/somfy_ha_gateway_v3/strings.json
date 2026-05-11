@@ -1,0 +1,124 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Set up Somfy HA Gateway V3",
+        "description": "Create the gateway. After setup, open Configure on this integration to add Somfy covers.",
+        "data": {
+          "name": "Gateway name",
+          "tx_entity": "TX text entity",
+          "rx_entity": "RX sensor entity"
+        }
+      }
+    },
+    "error": {
+      "invalid_covers_json": "The covers JSON is invalid."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Manage Somfy HA Gateway V3",
+        "menu_options": {
+          "gateway_settings": "Gateway settings",
+          "add_cover": "Add Somfy cover",
+          "pick_remove_cover": "Remove Somfy cover"
+        },
+        "menu_option_descriptions": {
+          "gateway_settings": "Change the gateway name and TX/RX entities.",
+          "add_cover": "Create a new Somfy cover device. The internal ID is generated automatically from the name.",
+          "pick_remove_cover": "Remove an existing Somfy cover."
+        }
+      },
+      "gateway_settings": {
+        "title": "Gateway settings",
+        "data": {
+          "name": "Gateway name",
+          "tx_entity": "TX text entity",
+          "rx_entity": "RX sensor entity"
+        }
+      },
+      "add_cover": {
+        "title": "Add Somfy cover",
+        "data": {
+          "name": "Cover name",
+          "address": "RTS address",
+          "rolling": "Rolling code",
+          "repeat": "Repeat",
+          "observed_addresses": "Observed addresses",
+          "position": "Current position",
+          "cover_type": "Cover type",
+          "time_out": "Time down/out",
+          "time_in": "Time up/in",
+          "my_position": "MY position"
+        },
+        "data_description": {
+          "address": "Somfy RTS address. Use 1-6 hex characters, for example A1B2C1.",
+          "observed_addresses": "Optional comma-separated addresses seen from remotes.",
+          "position": "0 is closed, 100 is open.",
+          "time_out": "Full travel time down/out in seconds.",
+          "time_in": "Full travel time up/in in seconds."
+        },
+        "description": "Enter the cover details. The internal ID is generated automatically from the name and kept stable afterwards."
+      },
+      "pick_edit_cover": {
+        "title": "Choose cover to edit",
+        "data": {
+          "id": "Cover"
+        }
+      },
+      "edit_cover": {
+        "title": "Edit Somfy cover",
+        "data": {
+          "name": "Cover name",
+          "address": "RTS address",
+          "rolling": "Rolling code",
+          "repeat": "Repeat",
+          "observed_addresses": "Observed addresses",
+          "position": "Current position",
+          "cover_type": "Cover type",
+          "time_out": "Time down/out",
+          "time_in": "Time up/in",
+          "my_position": "MY position"
+        },
+        "description": "Edit {cover_name} ({cover_id}). The internal cover ID is kept stable."
+      },
+      "pick_remove_cover": {
+        "title": "Choose cover to remove",
+        "data": {
+          "id": "Cover"
+        }
+      },
+      "remove_cover": {
+        "title": "Remove Somfy cover",
+        "description": "Remove {cover_name} ({cover_id}) from this gateway?",
+        "data": {
+          "confirm_remove": "Yes, remove this cover"
+        }
+      },
+      "advanced_json": {
+        "title": "Advanced JSON editor",
+        "description": "Use this for bulk edits or recovery. Normal add/edit/remove flows are safer for daily use.",
+        "data": {
+          "covers_json": "Covers JSON"
+        }
+      }
+    },
+    "error": {
+      "invalid_covers_json": "The covers JSON is invalid.",
+      "invalid_cover": "The cover configuration is invalid. Check address format and required fields.",
+      "duplicate_cover_id": "A cover with this generated ID already exists."
+    },
+    "abort": {
+      "no_covers": "There are no covers to edit or remove.",
+      "cover_not_found": "The selected cover was not found."
+    }
+  },
+  "entity": {
+    "select": {
+      "cover_type": {
+        "name": "Cover type"
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "domain": "somfy_ha_gateway_v3",
+  "name": "Somfy HA Gateway V3",
+  "version": "0.5.2",
+  "documentation": "",
+  "requirements": [],
+  "dependencies": [],
+  "codeowners": [
+    "@you"
+  ],
+  "config_flow": true,
+  "iot_class": "local_push"
+}
