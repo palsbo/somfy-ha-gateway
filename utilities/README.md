@@ -1,6 +1,6 @@
-\# Utilities for Somfy RTS
+# Utilities for Somfy RTS
 
-\## Somfy Monitor
+## Somfy Monitor
 
 This is a smal monitor based on a standalone TTGO Lora32 unit. The device listen to RTS trafik and display the Address and Rolling-code.
 
