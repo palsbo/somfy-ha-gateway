@@ -1,0 +1,117 @@
+esphome:
+  name: raw_rts_monitor
+  friendly_name: "Raw RTS Monitor"
+
+esp32:
+  board: ttgo-lora32-v21
+  framework:
+    type: arduino
+
+logger:
+  baud_rate: 115200
+  level: INFO
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+api:
+
+ota:
+  - platform: esphome
+
+web_server:
+  port: 80
+
+spi:
+  clk_pin: GPIO5
+  miso_pin: GPIO19
+  mosi_pin: GPIO27
+
+sx127x:
+  dio0_pin: GPIO26
+  cs_pin: GPIO18
+  rst_pin: GPIO23
+  frequency: 433420000
+  modulation: OOK
+  bandwidth: 50_0kHz
+  bitrate: 2400
+  bitsync: true
+  packet_mode: false
+  rx_start: true
+  rx_floor: -85
+
+# Remote receiver + dekodning
+remote_receiver:
+  pin: GPIO32
+  dump: 
+    - raw
+  tolerance: 35%
+  filter: 200us
+  idle: 4000us
+  buffer_size: 4kb
+
+  on_raw:
+    then:
+      - lambda: |-
+          if (x.size() < 70) return;
+
+          int shorts = 0, longs = 0;
+          for (int p : x) {
+            int ap = std::abs(p);
+            if (ap < 650) shorts++;
+            else if (ap < 1600) longs++;
+          }
+
+          ESP_LOGI("Somfy", "=== Somfy RTS PAKKE ===");
+          ESP_LOGI("Somfy", "Pulses: %d | Short: %d | Long: %d", x.size(), shorts, longs);
+          
+          // Vis start af pulser (til analyse)
+          if (x.size() > 40) {
+            ESP_LOGD("Somfy", "Første 25 pulser: %d,%d,%d,%d,%d ...", 
+                     x[0], x[1], x[2], x[3], x[4]);
+          }
+
+# Globale variabler til display
+globals:
+  - id: disp_rx_addr
+    type: std::string
+    restore_value: false
+  - id: disp_rx_cmd
+    type: std::string
+    restore_value: false
+  - id: disp_rx_rc
+    type: std::string
+    restore_value: false
+
+# Display
+i2c:
+  sda: 21
+  scl: 22
+  scan: false
+
+font:
+  - file: "gfonts://Roboto Mono"
+    id: font_sm
+    size: 10
+  - file: "gfonts://Roboto Mono"
+    id: font_hd
+    size: 11
+
+display:
+  - platform: ssd1306_i2c
+    model: "SSD1306 128x64"
+    address: 0x3C
+    update_interval: 500ms
+    lambda: |-
+      it.filled_rectangle(0, 0, 128, 15);
+      it.print(14, 0, id(font_hd), COLOR_OFF, "Somfy Gateway");
+
+      it.print(0, 18, id(font_sm), "Addr :");
+      it.printf(55, 18, id(font_sm), "%s", id(disp_rx_addr).c_str());
+
+      it.print(0, 30, id(font_sm), "Cmd  :");
+      it.printf(55, 30, id(font_sm), "%s", id(disp_rx_cmd).c_str());
+
+      it.print(0, 42, id(font_sm), "RC   :");
+      it.printf(55, 42, id(font_sm), "%s", id(disp_rx_rc).c_str());

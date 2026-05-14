@@ -297,23 +297,26 @@ class SomfyCC1101V2 : public esphome::Component {
     frame[1] |= (chk & 0x0F);
   }
 
-  static void add_manchester_bits_(
-      esphome::remote_base::RemoteTransmitData *data,
-      const uint8_t *obf)
-  {
-    static constexpr uint32_t SYMBOL = 640;
-    for (int i = 0; i < 56; i++) {
-      bool bit = (obf[i / 8] >> (7 - (i % 8))) & 1;
-      if (bit) {
-        data->mark(SYMBOL);
-        data->space(SYMBOL);
-      } else {
-        data->space(SYMBOL);
-        data->mark(SYMBOL);
-      }
+static void add_manchester_bits_(
+    esphome::remote_base::RemoteTransmitData *data,
+    const uint8_t *obf)
+{
+  static constexpr uint32_t SYMBOL = 640;
+
+  for (int i = 0; i < 56; i++) {
+    bool bit = (obf[i / 8] >> (7 - (i % 8))) & 1;
+
+    if (bit) {
+      // Somfy RTS: bit 1 = LOW-HIGH
+      data->space(SYMBOL);
+      data->mark(SYMBOL);
+    } else {
+      // Somfy RTS: bit 0 = HIGH-LOW
+      data->mark(SYMBOL);
+      data->space(SYMBOL);
     }
   }
-
+}
   static void add_first_frame_(
       esphome::remote_base::RemoteTransmitData *data,
       const uint8_t *obf)
@@ -324,7 +327,7 @@ class SomfyCC1101V2 : public esphome::Component {
       data->mark(2560);
       data->space(2560);
     }
-    data->mark(4550);
+    data->mark(4800);
     data->space(640);
     add_manchester_bits_(data, obf);
   }
@@ -339,7 +342,7 @@ class SomfyCC1101V2 : public esphome::Component {
       data->mark(2560);
       data->space(2560);
     }
-    data->mark(4550);
+    data->mark(4800);
     data->space(640);
     add_manchester_bits_(data, obf);
   }
