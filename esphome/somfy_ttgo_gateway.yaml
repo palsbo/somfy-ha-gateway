@@ -1,6 +1,6 @@
 esphome:
-  name: ttgo-somfy-gw
-  friendly_name: "TTGO Somfy Gateway"
+  name: somfy_ttgo-gw
+  friendly_name: "Somfy TTGO Gateway"
   on_boot:
     priority: 600
     then:
@@ -12,7 +12,7 @@ external_components:
       type: local
       path: components
 
-somfy_custom_v3:
+somfy_ttgo_v3:
   id: my_somfy
 
 esp32:
@@ -54,20 +54,20 @@ display:
     update_interval: 500ms
     lambda: |-
       // Header (inverteret)
-      it.filled_rectangle(0, 0, 128, 13);
-      it.print(14, 2, id(font_hd), COLOR_OFF, "Somfy Gateway");
+      it.filled_rectangle(0, 0, 128, 15);
+      it.print(14, 0, id(font_hd), COLOR_OFF, "Somfy Gateway");
 
       // RX
-      it.print(0, 16, id(font_sm), "RX:");
-      it.printf(22, 16, id(font_sm), "%s", id(my_somfy).disp_rx_addr.c_str());
-      it.printf(22, 27, id(font_sm), "%s  RC:%s",
+      it.print(0, 17, id(font_sm), "RX:");
+      it.printf(22, 17, id(font_sm), "%s", id(my_somfy).disp_rx_addr.c_str());
+      it.printf(22, 28, id(font_sm), "%s  RC:%s",
                 id(my_somfy).disp_rx_cmd.c_str(),
                 id(my_somfy).disp_rx_rc.c_str());
 
       // TX
-      it.print(0, 40, id(font_sm), "TX:");
-      it.printf(22, 40, id(font_sm), "%s", id(my_somfy).disp_tx_addr.c_str());
-      it.printf(22, 51, id(font_sm), "%s", id(my_somfy).disp_tx_cmd.c_str());
+      it.print(0, 41, id(font_sm), "TX:");
+      it.printf(22, 41, id(font_sm), "%s", id(my_somfy).disp_tx_addr.c_str());
+      it.printf(22, 52, id(font_sm), "%s", id(my_somfy).disp_tx_cmd.c_str());
 
 # RX: modtagne Somfy-beskeder leveres her som JSON
 # Eksempel output: {"protocol":"somfy_rts","dir":"rx","address":"A1B2C1","command":"up","rolling_code":1737}
