@@ -408,4 +408,13 @@ utilities/README.md
 
 ## License
 
-See the license file in this repository.
+This project is released under the MIT License.
+
+You may use, copy, modify and distribute the software freely, provided that the
+copyright notice and license text are included in copies or substantial portions
+of the software.
+
+Attribution is appreciated when this project is copied, reused, referenced or
+discussed publicly.
+
+See [LICENSE](LICENSE).
