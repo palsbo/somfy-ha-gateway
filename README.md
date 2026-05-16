@@ -2,7 +2,7 @@
 
 Home Assistant custom integration for controlling Somfy RTS covers through a replaceable RF gateway.
 
-The integration separates Home Assistant state management from the RF hardware. Home Assistant owns cover configuration, rolling codes, repeat count, estimated position and device entities. The RF gateway is a stateless transport adapter that sends and receives Somfy RTS frames using JSON.
+The integration separates Home Assistant state management from the RF hardware. Home Assistant owns cover configuration, rolling codes, repeat count, estimated position and device entities. The RF gateway acts as a mostly stateless transport adapter that sends and receives Somfy RTS frames using JSON.
 
 > Status: early development / public testing.
 
@@ -10,7 +10,7 @@ The integration separates Home Assistant state management from the RF hardware. 
 
 * Home Assistant custom integration for Somfy RTS covers
 * Local control through an ESPHome-based RF gateway
-* Gateway-agnostic JSON protocol
+* Gateway-agnostic JSON TX/RX protocol
 * Rolling code management in Home Assistant
 * Estimated cover position based on configured travel times
 * Add and remove covers from the integration options UI
@@ -34,7 +34,7 @@ Home Assistant integration
 RF gateway
   - receives JSON TX commands from Home Assistant
   - transmits Somfy RTS frames
-  - receives Somfy RTS frames
+  - optionally receives Somfy RTS frames
   - publishes JSON RX payloads back to Home Assistant
 ```
 
@@ -62,9 +62,9 @@ Use this option if you already have a working TTGO LoRa32 433 MHz based gateway.
 
 ### ESP32 + CC1101 / E07-M1101D
 
-This is the ESPHome CC1101 gateway option, intended especially for users who already have ESPSomfyRTS-style ESP32 + CC1101 hardware and want to reuse the hardware with this Home Assistant integration.
+This is the CC1101 gateway option for ESP32 + CC1101 hardware, including hardware similar to ESPSomfyRTS builds.
 
-The CC1101 gateway is designed to use the same JSON TX/RX contract as the TTGO gateway.
+The CC1101 gateway uses the same JSON TX/RX contract as the TTGO gateway.
 
 Other gateways may work if they implement the same JSON TX/RX protocol.
 
@@ -187,24 +187,21 @@ ESPHome gateway examples live in:
 esphome/
 ```
 
-Current gateway examples:
-
-```text
-esphome/TTGO Somfy HA Gateway.yaml
-esphome/Somfy_CC1101_gw.yaml
-```
-
 Custom ESPHome components live in:
 
 ```text
 esphome/components/
 ```
 
+For detailed ESPHome setup, wiring and flashing instructions, see:
+
+```text
+esphome/README.md
+```
+
 ## ESP32 + CC1101 Gateway
 
-The CC1101 gateway is intended for ESP32 + CC1101 hardware, including hardware similar to ESPSomfyRTS builds.
-
-### CC1101 wiring
+The CC1101 gateway is intended for ESP32 + CC1101 hardware.
 
 The default CC1101 gateway template assumes this wiring:
 
@@ -231,24 +228,36 @@ Important:
 
 ### Adapting CC1101 pins
 
-If your hardware uses different pins, update both the YAML file and the custom component constants.
+The CC1101 ESPHome YAML is intended to be configured through ESPHome substitutions.
 
-In `esphome/Somfy_CC1101_gw.yaml`, update the ESPHome `remote_transmitter` and `remote_receiver` sections if present.
+Example:
 
-In the CC1101 custom component header, update the pin constants, for example:
+```yaml
+substitutions:
+  my_name: somfy-cc1101-gw
+  my_friendly_name: Somfy CC1101 Gateway
+  my_board: esp32dev
 
-```cpp
-static constexpr uint8_t SOMFY_CC1101_TX_PIN = 26;
-static constexpr uint8_t SOMFY_CC1101_RX_PIN = 35;
+  # SPI pins
+  cc_cs: GPIO5
+  cc_clk: GPIO18
+  cc_mosi: GPIO23
+  cc_miso: GPIO19
+
+  # CC1101 GDO pins
+  cc_gdo0: GPIO26
+  cc_gdo2: GPIO35
 ```
 
-Use your actual ESP32 GPIO numbers.
+These substitutions are then used by the SPI, CC1101, `remote_transmitter` and `remote_receiver` sections in the YAML.
+
+If your hardware uses different pins, change the substitution values in the YAML file. You should not need to edit C++ `static constexpr` pin constants for normal pin changes.
 
 ### CC1101 setup steps
 
-1. Copy `esphome/Somfy_CC1101_gw.yaml` to your ESPHome configuration folder.
-2. Copy the required component folder from `esphome/components/` to your ESPHome `components/` folder.
-3. Check the GPIO pin mapping.
+1. Copy the CC1101 YAML file from `esphome/` to your ESPHome configuration folder.
+2. Copy the required custom component folder from `esphome/components/` to your ESPHome `components/` folder, if your setup uses local components.
+3. Check the GPIO pin mapping in the YAML `substitutions:` section.
 4. Update Wi-Fi secrets if needed.
 5. Compile and flash from ESPHome.
 6. Confirm that Home Assistant discovers the ESPHome device.
@@ -263,10 +272,6 @@ The CC1101 gateway is under active testing. TX is expected to work with the curr
 The TTGO LoRa32 gateway is the original reference gateway.
 
 Use the TTGO ESPHome YAML if your hardware is based on TTGO LoRa32 433 MHz / SX1278.
-
-```text
-esphome/TTGO Somfy HA Gateway.yaml
-```
 
 The TTGO gateway and the CC1101 gateway both expose the same JSON TX/RX entities to Home Assistant.
 
@@ -380,6 +385,7 @@ somfy-ha-gateway/
   docs/
     protocol-json.md
   esphome/
+    README.md
     TTGO Somfy HA Gateway.yaml
     Somfy_CC1101_gw.yaml
     components/
@@ -390,4 +396,4 @@ somfy-ha-gateway/
 
 ## License
 
-Licens
+See the license file in this repository.

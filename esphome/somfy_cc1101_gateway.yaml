@@ -1,6 +1,24 @@
+#########################################################
+#
+# JSON - RTS ESPHome gateway weith ESP32 + CC1101
+#
+# Adjust the PIN allocation to your actual hardware
+#
+#########################################################
+substitutions:
+  my_name: somfy-cc1101-gw
+  my_friendly_name: Somfy CC1101 Gateway
+  my_board: esp32dev
+  cc_cs: GPIO5
+  cc_clk: GPIO18
+  cc_mosi: GPIO23
+  cc_miso: GPIO19
+  cc_gdo0: GPIO26
+  cc_gdo2: GPIO35
+    
 esphome:
-  name: somfy-cc1101-gw
-  friendly_name: Somfy CC1101 Gateway
+  name: $my_name
+  friendly_name: $my_friendly_name
   min_version: 2025.11.0
   name_add_mac_suffix: false
   platformio_options:
@@ -21,7 +39,7 @@ somfy_cc1101_v2:
   transmitter: somfy_tx
 
 esp32:
-  board: esp32dev
+  board: $my_board
   framework:
     type: arduino
 
@@ -41,19 +59,19 @@ web_server:
   port: 80
 
 spi:
-  clk_pin: GPIO18
-  mosi_pin: GPIO23
-  miso_pin: GPIO19
+  clk_pin: $cc_clk
+  mosi_pin: $cc_mosi
+  miso_pin: $cc_miso
 
 # ESPHomes native CC1101 komponent håndterer al CC1101-konfiguration
 cc1101:
-  cs_pin: GPIO5
+  cs_pin: $cc_cs
   frequency: 433.42MHz
 
 # TX via RMT-periferien — on_transmit/on_complete styrer CC1101 TX/RX mode
 remote_transmitter:
   id: somfy_tx
-  pin: GPIO26        # GDO0
+  pin: $cc_gdo0        # GDO0
   carrier_duty_percent: 100%
   on_transmit:
     then:
@@ -64,7 +82,7 @@ remote_transmitter:
 
 # RX via ESPHomes remote_receiver — on_raw sender pulser til Somfy-decoder
 remote_receiver:
-  pin: GPIO35        # GDO2
+  pin: $cc_gdo2        # GDO2
   dump: []
   filter: 100us
   idle: 40ms
