@@ -5,10 +5,11 @@ Home Assistant custom integration for controlling Somfy RTS covers through a rep
 The integration separates Home Assistant state management from the RF hardware. Home Assistant owns cover configuration, rolling codes, repeat count, estimated position and device entities. The RF gateway acts as a mostly stateless transport adapter that sends and receives Somfy RTS frames using JSON.
 
 > Status: early development / public testing.
+### HA Kontrol Panel
 ![HA Control panel](docs/cover.png)
-HA Kontrol Panel
+### Changing hub configuration - Adding and removing covers
 ![HA Control panel](docs/integration_menu.jpg)
-Changing hub configuration - Adding and removing covers
+
 
 ## Features
 
