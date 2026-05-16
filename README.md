@@ -198,7 +198,7 @@ For detailed ESPHome setup, wiring and flashing instructions
 See: [esphome/README.md](esphome/README.md)
 
 ## ESP32 + CC1101 Gateway
-![ESP32+CC1101]("docs/somfy_cc1101_gateway.png")
+![ESP32+CC1101](docs/somfy_cc1101_gateway.png)
 
 The CC1101 gateway is intended for ESP32 + CC1101 hardware.
 
@@ -267,7 +267,7 @@ If your hardware uses different pins, change the substitution values in the YAML
 The CC1101 gateway is under active testing. TX is expected to work with the current prototype. RX support is experimental and may need tuning for specific hardware and receiver sensitivity.
 
 ## TTGO LoRa32 Gateway
-![ESP32+CC1101]("docs/somfy_ttgo_gateway.png")
+![ESP32+CC1101](docs/somfy_ttgo_gateway.png)
 
 The TTGO LoRa32 gateway is the original reference gateway.
 
