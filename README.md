@@ -402,9 +402,8 @@ utilities/
 ```
 These tools can help inspect Somfy RTS RF traffic, raw pulse timing, addresses and rolling codes during development or debugging. They are not required for normal Home Assistant gateway operation.
 
-See:
+See: [utilities/README.md](utilities/README.md)
 
-utilities/README.md
 
 ## License
 
