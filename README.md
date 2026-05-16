@@ -193,11 +193,9 @@ Custom ESPHome components live in:
 esphome/components/
 ```
 
-For detailed ESPHome setup, wiring and flashing instructions, see:
+For detailed ESPHome setup, wiring and flashing instructions
 
-```text
-esphome/README.md
-```
+See: [esphome/README.md](esphome/README.md)
 
 ## ESP32 + CC1101 Gateway
 
@@ -306,11 +304,9 @@ Example RX payload:
 
 Commands are case-insensitive. Gateways may publish command names such as `Up`, `Down` and `My`; the Home Assistant integration normalizes received commands to lowercase.
 
-See the full protocol documentation:
+For full protocol documentation:
 
-```text
-docs/protocol-json.md
-```
+See: [docs/protocol-json.md](docs/protocol-json.md)
 
 ## Rolling Code Warning
 
@@ -402,7 +398,7 @@ utilities/
 ```
 These tools can help inspect Somfy RTS RF traffic, raw pulse timing, addresses and rolling codes during development or debugging. They are not required for normal Home Assistant gateway operation.
 
-See: [utilities/README.md](utilities/README.md)
+See: [utilities/README.md](utilities/README.md).
 
 
 ## License
@@ -416,4 +412,4 @@ of the software.
 Attribution is appreciated when this project is copied, reused, referenced or
 discussed publicly.
 
-See [LICENSE](LICENSE).
+See: [LICENSE](LICENSE).
