@@ -61,7 +61,7 @@ The CC1101 gateway is configured through the `substitutions:` section in the YAM
 The default CC1101 template assumes this wiring:
 
 | Pin | E07-M1101D / CC1101 | ESP32 | Purpose |
-|---|---:|---|
+|---|---|---|---|
 | 1 | GND | GND | Ground |
 | 2 | VCC | 3V3 | Power |
 | 3 | GDO0 | GPIO26 | TX output |
