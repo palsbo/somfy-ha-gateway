@@ -60,16 +60,16 @@ The CC1101 gateway is configured through the `substitutions:` section in the YAM
 
 The default CC1101 template assumes this wiring:
 
-| E07-M1101D / CC1101 | ESP32 | Purpose |
+| Pin | E07-M1101D / CC1101 | ESP32 | Purpose |
 |---|---:|---|
-| GND | GND | Ground |
-| VCC | 3V3 | Power |
-| CSN | GPIO5 | SPI chip select |
-| SCK | GPIO18 | SPI clock |
-| MOSI | GPIO23 | SPI MOSI |
-| MISO | GPIO19 | SPI MISO |
-| GDO0 | GPIO26 | TX output |
-| GDO2 | GPIO35 | RX input |
+| 1 | GND | GND | Ground |
+| 2 | VCC | 3V3 | Power |
+| 3 | GDO0 | GPIO26 | TX output |
+| 4 | CSN | GPIO5 | SPI chip select |
+| 5 | SCK | GPIO18 | SPI clock |
+| 6 | MOSI | GPIO23 | SPI MOSI |
+| 7 | MISO | GPIO19 | SPI MISO |
+| 8 | GDO2 | GPIO35 | RX input |
 
 Important notes:
 
