@@ -1,4 +1,7 @@
-# ESPHome CC1101 based interface for Somfy HA Gateway
+# ESPHome based interface for Somfy HA Gateway
+There are 2 available hardware options:
+1) TTGO Lora32 hardware with ESP32 and SX1276 tranceiver for 433mHx
+2) ESP32 + CC1101 module. Software needs to be adjusted to fit the actual hardware connection between ESP32 and the CC1101 module
 ## Hardware
 This interface is based on ESP32 + CC1101 module for RTS communication via 433.43mHz.
 The code supplied is configured as follow:
