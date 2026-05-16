@@ -404,8 +404,8 @@ These tools can help inspect Somfy RTS RF traffic, raw pulse timing, addresses a
 
 See:
 
-utilities/README.md
-::contentReference[oaicite:3]{index=3}
+utilities/README.md::contentReference[oaicite:3]{index=3}
+
 ## License
 
 See the license file in this repository.
