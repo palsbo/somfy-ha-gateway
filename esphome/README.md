@@ -35,6 +35,9 @@ The exact names may vary depending on the ESPHome device name and Home Assistant
 Use this option for TTGO LoRa32 433 MHz hardware with an SX1276/SX1278 transceiver.
 
 The TTGO gateway is the original reference gateway and normally does not require hardware changes.
+### TTGO Lora32 Gateway - in a box
+![ESP32+CC1101](docs/Lora32_box.png)
+
 
 ### TTGO Installation
 
@@ -50,6 +53,8 @@ The TTGO gateway is the original reference gateway and normally does not require
 Use this option for ESP32 + CC1101 hardware, including E07-M1101D modules and similar 433 MHz CC1101 boards.
 
 The CC1101 gateway is configured through the `substitutions:` section in the YAML file. This is the preferred place to change ESP32 board type, device name and GPIO pin assignments.
+### ESP32 + CC1101 Gateway - in a box
+![ESP32+CC1101](docs/cc1101_box.png)
 
 ## Default CC1101 Wiring
 
