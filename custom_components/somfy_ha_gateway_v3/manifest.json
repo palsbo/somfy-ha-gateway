@@ -1,7 +1,7 @@
 {
   "domain": "somfy_ha_gateway_v3",
   "name": "Somfy HA Gateway V3",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "documentation": "https://github.com/palsbo/somfy-ha-gateway",
   "issue_tracker": "https://github.com/palsbo/somfy-ha-gateway/issues",
   "codeowners": [
