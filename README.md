@@ -393,7 +393,19 @@ somfy-ha-gateway/
   README.md
   hacs.json
 ```
+## Utilities
 
+Optional troubleshooting tools are available in:
+
+```text
+utilities/
+```
+These tools can help inspect Somfy RTS RF traffic, raw pulse timing, addresses and rolling codes during development or debugging. They are not required for normal Home Assistant gateway operation.
+
+See:
+
+utilities/README.md
+::contentReference[oaicite:3]{index=3}
 ## License
 
 See the license file in this repository.
