@@ -6,6 +6,9 @@ The integration separates Home Assistant state management from the RF hardware. 
 
 > Status: early development / public testing.
 ![HA Control panel](docs/cover.png)
+HA Kontrol Panel
+![HA Control panel](docs/integration_menu.png)
+Changing hub configuration - Adding and removing covers
 
 ## Features
 
